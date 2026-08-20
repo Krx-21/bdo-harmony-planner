@@ -815,8 +815,10 @@ function parseHash(){ try{ if(location.hash===LAST_HASH_APPLIED) return false; L
     catch(e){ stat.textContent='⚠'; stat.title='sync error'; }
   }, 1200); }
   function hookSave(){ if(hooked) return; hooked=true; const orig=window.save; window.save=function(){ S.ts=Date.now(); orig(); push(); }; }
+  renderBtn();
   (async()=>{ try{
-    const me=await (await fetch('/api/me')).json(); USER=me.user; CFG=me.configured||CFG; renderBtn();
+    const r0=await fetch('/api/me'); if(!r0.ok || !(r0.headers.get('content-type')||'').includes('json')){ wrap.style.display='none'; return; }
+    const me=await r0.json(); USER=me.user; CFG=me.configured||CFG; renderBtn();
     if(USER && CFG.storage){
       hookSave();
       try{ const r=await fetch('/api/state'); if(r.ok){ const d=await r.json(); const st=d && d.state;
@@ -827,7 +829,7 @@ function parseHash(){ try{ if(location.hash===LAST_HASH_APPLIED) return false; L
         } else { push(); }
       } }catch(e){}
     } else if(USER && !CFG.storage){ stat.textContent='⚠'; stat.title=(LANG==='th'?'ยังไม่ได้ต่อฐานข้อมูล (Upstash) — ข้อมูลเก็บในเครื่องเท่านั้น':'No storage linked — local only'); }
-  }catch(e){} })();
+  }catch(e){ wrap.style.display='none'; } })();
 })();
 </script>
 </body>
