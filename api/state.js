@@ -1,7 +1,7 @@
 const { session, kv, kvEnv } = require('./_lib');
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  const s = session(req);
+  const s = await session(req);
   if (!s) return res.status(401).json({ error: 'not_logged_in' });
   if (!kvEnv()) return res.status(501).json({ error: 'no_storage' });
   const key = `hdp:state:${s.id}`;
